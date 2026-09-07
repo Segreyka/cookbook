@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Рецепты">
+<meta name="theme-color" content="#c1121f">
+<title>Кулинарная книга</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,system-ui,sans-serif;-webkit-tap-highlight-color:transparent;}
+html,body{overscroll-behavior-y:contain;touch-action:manipulation;scroll-behavior:smooth;}
+button,input,summary,textarea{touch-action:manipulation;}
+body{--bg:#fff4e8;--card:#fff;--text:#3c1a12;--sub:#b06a45;--border:#f6ddc4;--accent:#e5383b;--accent2:#ff8500;--header-grad:linear-gradient(135deg,#c1121f,#ff8500);--header-text:#fff;--input-bg:#fff1e0;--input-border:#ffc79b;--input-text:#c1121f;--spice-bg:#ffe8cc;--spice-border:#ff9e42;--spice-text:#b34700;--warn-bg:#ffe5d0;--warn-border:#ff7b00;--warn-text:#c1440e;--radius:16px;--card-border:1px solid transparent;--card-shadow:0 4px 14px rgba(197,58,20,.16);--btn-shadow:0 6px 16px rgba(229,56,59,.35);--head-glow:none;background:var(--bg);color:var(--text);padding-bottom:50px;transition:background .3s,color .3s;}
+body.theme-dark{--bg:#060606;--card:#141414;--text:#fafafa;--sub:#9a9a9a;--border:#2b2b2b;--accent:#ff1744;--accent2:#ffab00;--header-grad:linear-gradient(135deg,#0a0a0a,#2b000a);--header-text:#ff1744;--input-bg:#1e1e1e;--input-border:#3d3d3d;--input-text:#ff5c7a;--spice-bg:#1c1410;--spice-border:#4a2c00;--spice-text:#ffab00;--warn-bg:#2a1200;--warn-border:#ff6d00;--warn-text:#ffab00;--radius:12px;--card-border:1px solid #2b2b2b;--card-shadow:0 0 0 1px #2b2b2b,0 0 26px rgba(255,23,68,.22);--btn-shadow:0 0 18px rgba(255,23,68,.55);--head-glow:0 0 18px rgba(255,23,68,.9);background-color:#060606;}
+body.theme-asian{--bg:#4d000a;--card:#fff3d0;--text:#4a0d0d;--sub:#a06a1a;--border:#eed391;--accent:#d90429;--accent2:#ffb700;--header-grad:linear-gradient(135deg,#6a040f,#d90429);--header-text:#ffd60a;--input-bg:#fff8e1;--input-border:#e6b800;--input-text:#9d0208;--spice-bg:#ffefc2;--spice-border:#e6b800;--spice-text:#9d6500;--warn-bg:#ffe5b4;--warn-border:#e69500;--warn-text:#9d5200;--radius:14px;--card-border:2px solid #ffb700;--card-shadow:0 6px 18px rgba(0,0,0,.45);--btn-shadow:0 6px 16px rgba(217,4,41,.45);--head-glow:0 0 16px rgba(255,214,10,.6);background-color:#4d000a;background-image:repeating-linear-gradient(45deg,rgba(255,183,0,.08) 0 2px,transparent 2px 24px);}
+body.theme-eco{--bg:#f1fbe9;--card:#fff;--text:#173410;--sub:#6f9a5e;--border:#d8efc8;--accent:#2f9e44;--accent2:#ff922b;--header-grad:linear-gradient(140deg,#2b8a3e,#94d82d);--header-text:#fff;--input-bg:#f0fbe6;--input-border:#a9d98a;--input-text:#2b8a3e;--spice-bg:#e6f9d8;--spice-border:#8ece62;--spice-text:#2b7a1f;--warn-bg:#fff0dc;--warn-border:#ff922b;--warn-text:#c05c00;--radius:22px;--card-border:1px solid #e0f2cf;--card-shadow:0 6px 18px rgba(47,158,68,.18);--btn-shadow:0 6px 16px rgba(47,158,68,.35);--head-glow:none;background-color:#f1fbe9;}
+.header{position:sticky;top:0;z-index:50;background:var(--header-grad);color:var(--header-text);padding:18px 16px 14px;text-align:center;border-radius:0 0 24px 24px;box-shadow:0 4px 20px rgba(0,0,0,.2);}
+.header h1{font-size:21px;margin-bottom:4px;font-weight:700;}
+.header p{font-size:12px;opacity:.9;}
+.ver{position:absolute;top:12px;right:16px;font-size:11px;opacity:.8;background:rgba(255,255,255,.2);padding:4px 10px;border-radius:12px;font-weight:600;}
+.back-btn{position:absolute;top:12px;left:16px;background:rgba(255,255,255,.2);border:none;color:#fff;padding:6px 14px;border-radius:16px;font-size:13px;font-weight:600;cursor:pointer;display:none;}
+.theme-switch{display:flex;gap:6px;justify-content:center;margin-top:12px;flex-wrap:wrap;}
+.t-btn{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);padding:6px 12px;border-radius:16px;font-size:12px;font-weight:600;cursor:pointer;user-select:none;}
+.t-btn.active{background:#fff;color:#333;border-color:#fff;}
+.screen{display:none;}
+.screen.active{display:block;animation:fadeIn .3s ease-out;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.search-wrap{margin:16px 16px 8px;}
+.search-wrap input{width:100%;padding:12px 16px;border-radius:16px;border:1.5px solid var(--input-border);background:var(--input-bg);color:var(--input-text);font-size:15px;font-weight:600;}
+.toolbar{display:flex;gap:8px;margin:0 16px 10px;flex-wrap:wrap;}
+.tbtn{flex:1;min-width:80px;padding:10px;border-radius:12px;border:1.5px solid var(--input-border);background:var(--input-bg);color:var(--input-text);font-size:13px;font-weight:700;cursor:pointer;}
+#menuGrid{margin:0 16px 20px;display:flex;flex-direction:column;gap:18px;}
+.cat-title{font-size:15px;font-weight:800;color:var(--accent);margin:0 4px 10px;}
+.cat-grid{display:grid;grid-template-columns:1fr;gap:16px;}
+@media(min-width:640px){.cat-grid{grid-template-columns:1fr 1fr;}}
+.menu-card{position:relative;background:var(--card);border-radius:var(--radius);padding:28px 18px;text-align:center;box-shadow:var(--card-shadow);border:var(--card-border);cursor:pointer;user-select:none;}
+.menu-card:active{transform:scale(0.97);}
+.menu-icon{font-size:52px;margin-bottom:10px;display:block;}
+.menu-title{font-size:20px;font-weight:800;color:var(--accent);}
+.menu-sub{font-size:12px;color:var(--sub);margin-top:6px;line-height:1.4;}
+.star{position:absolute;top:10px;right:10px;background:none;border:none;font-size:20px;cursor:pointer;}
+.recipe-photo{width:calc(100% - 32px);max-height:220px;object-fit:cover;border-radius:var(--radius);margin:16px auto 0;display:block;}
+.card{background:var(--card);margin:16px;border-radius:var(--radius);padding:20px;box-shadow:var(--card-shadow);border:var(--card-border);}
+.card h2{font-size:18px;color:var(--accent);margin-bottom:8px;font-weight:800;}
+.hint{font-size:12px;color:var(--sub);margin-bottom:16px;}
+.modes{display:flex;flex-direction:column;gap:16px;}
+.mode-label{font-size:13px;font-weight:700;margin-bottom:8px;}
+.mode-row{display:flex;gap:4px;background:var(--input-bg);padding:4px;border-radius:14px;border:1px solid var(--input-border);}
+.mode-btn{flex:1;padding:10px;border-radius:10px;border:none;background:transparent;color:var(--sub);font-size:13px;font-weight:600;cursor:pointer;}
+.mode-btn.active{background:var(--card);color:var(--accent);}
+.ingredient{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);gap:12px;}
+.ingredient:last-child{border-bottom:none;}
+.chk{width:22px;height:22px;accent-color:var(--accent);flex-shrink:0;cursor:pointer;}
+.ingredient .emoji{font-size:22px;width:32px;text-align:center;}
+.ingredient .info{flex:1;min-width:0;}
+.ingredient .name{font-size:15px;font-weight:700;}
+.ingredient .sub{font-size:11px;color:var(--sub);}
+.ingredient .conv{font-size:11px;color:var(--accent2);font-weight:700;margin-top:2px;}
+.ingredient input[type=text]{width:80px;padding:8px;font-size:16px;text-align:center;border:1.5px solid var(--input-border);border-radius:12px;background:var(--input-bg);color:var(--input-text);font-weight:800;}
+.ingredient input:focus{outline:none;border-color:var(--accent);}
+.ingredient .unit{font-size:12px;color:var(--sub);width:30px;font-weight:600;}
+.ratio-badge{margin-top:16px;padding:16px;border-radius:14px;background:var(--spice-bg);border:1.5px solid var(--spice-border);color:var(--spice-text);font-size:15px;font-weight:800;text-align:center;}
+.leaven-warn{margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--warn-bg);border:1.5px solid var(--warn-border);color:var(--warn-text);font-size:12px;line-height:1.5;font-weight:600;}
+.progress{font-size:12px;color:var(--sub);margin-top:12px;font-weight:700;text-align:right;}
+.banner{text-align:center;font-size:14px;color:var(--text);margin:12px 16px;background:var(--card);padding:12px;border-radius:var(--radius);box-shadow:var(--card-shadow);font-weight:700;}
+.banner b{color:var(--accent);font-size:16px;}
+.yield{text-align:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;margin:16px;padding:16px;border-radius:var(--radius);font-size:16px;font-weight:700;box-shadow:var(--btn-shadow);}
+.btn{display:block;width:calc(100% - 32px);margin:12px 16px;padding:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:800;cursor:pointer;box-shadow:var(--btn-shadow);user-select:none;}
+.btn:active{transform:scale(0.98);}
+.btn.secondary{background:var(--card);color:var(--accent);border:2px solid var(--accent);box-shadow:none;}
+details{margin:12px 16px;background:var(--card);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--card-shadow);}
+summary{font-size:16px;font-weight:700;cursor:pointer;user-select:none;}
+.tips{font-size:13px;line-height:1.6;padding-top:12px;}
+.tips li{margin:8px 0 8px 20px;}
+.cost-row{padding:12px 0;border-bottom:1px solid var(--border);}
+.cost-top{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:6px;}
+.cost-amt{color:var(--sub);font-weight:400;font-size:12px;}
+.cost-bottom{display:flex;align-items:center;gap:8px;}
+.price-in{width:80px;padding:8px;border:1.5px solid var(--input-border);border-radius:10px;background:var(--input-bg);color:var(--input-text);text-align:center;font-size:14px;font-weight:700;}
+.cost-unit{font-size:12px;color:var(--sub);}
+.cost-line{margin-left:auto;font-size:14px;font-weight:800;color:var(--accent);}
+.cost-total{margin-top:12px;padding-top:12px;border-top:2px dashed var(--border);font-size:16px;font-weight:800;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.full-recipe{background:var(--card);margin:16px;border-radius:var(--radius);padding:20px;box-shadow:var(--card-shadow);}
+.full-recipe h2{font-size:18px;color:var(--accent);margin-bottom:16px;font-weight:800;}
+.full-recipe .intro{font-size:14px;line-height:1.6;}
+.full-recipe h3{font-size:15px;color:var(--accent);margin:16px 0 10px;font-weight:800;}
+.step{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.step:last-child{border-bottom:none;}
+.step-num{flex-shrink:0;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;}
+.step-body{flex:1;}
+.step-title{font-weight:800;font-size:14px;margin-bottom:4px;}
+.step-desc{font-size:13px;line-height:1.55;}
+.step-desc b{color:var(--accent);}
+.secrets{display:grid;gap:8px;margin-top:8px;}
+.secret{padding:10px 12px;background:var(--spice-bg);border-left:4px solid var(--accent);border-radius:8px;font-size:13px;line-height:1.5;}
+.problem-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.problem-tbl th,.problem-tbl td{border:1px solid var(--border);padding:8px;vertical-align:top;text-align:left;}
+.problem-tbl th{background:var(--spice-bg);color:var(--spice-text);}
+.problem-tbl td:first-child{font-weight:700;color:var(--warn-text);}
+.serving{margin-top:16px;padding:12px;background:var(--spice-bg);border-radius:10px;font-size:13px;line-height:1.55;}
+.cook-overlay,.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:120;padding:16px;}
+.cook-box,.panel{background:var(--card);border-radius:20px;padding:20px;max-width:420px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+.cook-box h2,.panel h2{color:var(--accent);font-size:20px;margin-bottom:12px;font-weight:800;}
+.panel h3{color:var(--accent);margin:12px 0 6px;}
+.panel input,.panel textarea{width:100%;padding:10px;border:1.5px solid var(--input-border);border-radius:10px;background:var(--input-bg);color:var(--input-text);margin-bottom:8px;font-size:14px;}
+.row{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;}
+.row input{flex:1;min-width:56px;margin-bottom:0;padding:8px;border:1.5px solid var(--input-border);border-radius:10px;background:var(--input-bg);color:var(--input-text);}
+.shop-item{padding:10px;border-bottom:1px solid var(--border);font-size:14px;display:flex;align-items:center;gap:8px;}
+.cook-step{font-size:16px;line-height:1.5;min-height:60px;margin-bottom:12px;font-weight:600;}
+.cook-timer{font-size:44px;font-weight:800;color:var(--accent2);margin:10px 0;font-variant-numeric:tabular-nums;}
+.cook-controls{display:flex;gap:8px;justify-content:center;margin-bottom:12px;}
+.cook-controls button{padding:12px 16px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;flex:1;}
+.timer-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+.next-btn{background:var(--bg);color:var(--text);}
+.cook-progress{font-size:12px;color:var(--sub);margin-bottom:12px;font-weight:700;text-align:center;}
+.cook-close{background:none;border:none;color:var(--sub);font-size:14px;cursor:pointer;padding:6px;font-weight:600;display:block;margin:0 auto;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:#fff;padding:12px 24px;border-radius:24px;font-size:14px;opacity:0;transition:all .3s;pointer-events:none;z-index:200;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.install-banner{position:fixed;bottom:20px;left:16px;right:16px;background:var(--card);padding:16px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.25);display:none;z-index:150;}
+.install-banner p{font-size:14px;font-weight:600;margin-bottom:12px;}
+.install-banner button{padding:10px 20px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-right:8px;}
+.install-banner .install-btn{background:var(--accent);color:#fff;}
+.install-banner .dismiss-btn{background:transparent;color:var(--sub);}
+@media print{.header,.install-banner,.toast,#screen-menu,.toolbar,.search-wrap,.btn,details,.cook-overlay,.panel-overlay,.theme-switch,.star,.back-btn{display:none!important;}body{background:#fff;color:#000;padding:0;}#screen-recipe{display:block!important;}.card,.full-recipe{box-shadow:none;border:1px solid #bbb;margin:8px 0;}.ingredient input[type=text]{border:none;background:none;}}
+</style>
+</head>
+<body class="theme-classic">
+<div class="header">
+  <button class="back-btn" id="backBtn" onclick="Eng.toMenu()">← Меню</button>
+  <span class="ver">v11.3</span>
+  <h1 id="mainTitle">📖 Кулинарная книга</h1>
+  <p id="mainSub">Выберите категорию и рецепт</p>
+  <div class="theme-switch">
+    <button class="t-btn" data-theme="classic" onclick="setTheme('classic')">🌶 Классика</button>
+    <button class="t-btn" data-theme="asian" onclick="setTheme('asian')">🏮 Азия</button>
+    <button class="t-btn" data-theme="dark" onclick="setTheme('dark')">🖤 Премиум</button>
+    <button class="t-btn" data-theme="eco" onclick="setTheme('eco')">🌿 Эко</button>
+  </div>
+</div>
+
+<div id="screen-menu" class="screen active">
+  <div class="search-wrap"><input id="searchInput" type="text" placeholder="🔍 Поиск: название или ингредиент…" oninput="Eng.buildMenu(this.value)"></div>
+  <div class="toolbar">
+    <button class="tbtn" onclick="Eng.openPanel('panelAdd')">➕ Рецепт</button>
+    <button class="tbtn" onclick="Eng.openPanel('panelShop');Eng.renderShop()">🛒 Покупки</button>
+    <button class="tbtn" onclick="Eng.openPanel('panelPantry');Eng.renderPantry()">🧊 Кладовая</button>
+    <button class="tbtn" onclick="Eng.openPanel('panelBackup')">💾 Бэкап</button>
+  </div>
+  <div id="menuGrid"></div>
+</div>
+
+<div id="screen-recipe" class="screen"><div id="recipeBox"></div></div>
+<div class="toast" id="toast"></div>
+
+<div class="panel-overlay" id="panelShop" onclick="if(event.target===this)Eng.closePanel('panelShop')"><div class="panel"><h2>🛒 Список покупок</h2><div id="shopList"></div><button class="btn" onclick="Eng.copyShop()">📋 Скопировать</button><button class="btn secondary" onclick="Eng.closePanel('panelShop')">Закрыть</button></div></div>
+
+<div class="panel-overlay" id="panelAdd" onclick="if(event.target===this)Eng.closePanel('panelAdd')"><div class="panel"><h2>➕ Новый рецепт</h2>
+<input id="addTitle" placeholder="Название блюда">
+<input id="addCat" placeholder="Категория (напр. 🍽 Домашние)">
+<input id="addIcon" placeholder="Эмодзи (напр. 🍲)" style="max-width:90px">
+<textarea id="addIntro" rows="2" placeholder="Короткое описание"></textarea>
+<h3>🥘 Состав</h3><div id="addIng"></div><button class="tbtn" onclick="Eng.addIngRow()">+ ингредиент</button>
+<h3>👩 Шаги</h3><div id="addSteps"></div><button class="tbtn" onclick="Eng.addStepRow()">+ шаг</button>
+<button class="btn" onclick="Eng.saveRecipe()">💾 Сохранить рецепт</button>
+<button class="btn secondary" onclick="Eng.closePanel('panelAdd')">Закрыть</button></div></div>
+
+<div class="panel-overlay" id="panelPantry" onclick="if(event.target===this)Eng.closePanel('panelPantry')"><div class="panel"><h2>🧊 Кладовая</h2>
+<div class="row"><input id="panName" placeholder="Что заготовили"><input id="panDays" type="number" placeholder="Срок, дней" style="max-width:90px"><button class="tbtn" onclick="Eng.pantryAdd()">+</button></div>
+<div id="panList"></div>
+<button class="btn secondary" onclick="Eng.closePanel('panelPantry')">Закрыть</button></div></div>
+
+<div class="panel-overlay" id="panelBackup" onclick="if(event.target===this)Eng.closePanel('panelBackup')"><div class="panel"><h2>💾 Резервная копия</h2>
+<button class="btn" onclick="Eng.exportBackup()">⬇️ Скачать копию</button>
+<label class="btn secondary" style="display:block;text-align:center">⬆️ Загрузить копию<input type="file" accept=".json" style="display:none" onchange="Eng.importBackup(this.files[0])"></label>
+<button class="btn secondary" onclick="Eng.closePanel('panelBackup')">Закрыть</button></div></div>
+
+<div class="panel-overlay" id="panelPhoto" onclick="if(event.target===this)Eng.closePanel('panelPhoto')"><div class="panel" style="max-width:320px"><h2>📸 Фото рецепта</h2>
+<button class="btn" onclick="Eng.pickPhoto('cam')">📷 Сделать фото</button>
+<button class="btn secondary" onclick="Eng.pickPhoto('gal')">🖼 Выбрать из галереи</button>
+<button class="btn secondary" onclick="Eng.removePhoto()">🗑 Убрать фото</button>
+<button class="btn secondary" onclick="Eng.closePanel('panelPhoto')">Закрыть</button></div></div>
+
+<div class="install-banner" id="installBanner">
+  <p>📱 Установить приложение на телефон?</p>
+  <button class="install-btn" id="installBtn">Установить</button>
+  <button class="dismiss-btn" id="dismissBtn">Позже</button>
+</div>
+
+<script>
+const fmt=(v,d)=>{if(!isFinite(v))v=0;return Math.round(v*Math.pow(10,d))/Math.pow(10,d);};
+const num=v=>{v=parseFloat(String(v).replace(',','.'));return isFinite(v)?v:0;};
+const val=id=>document.getElementById(id).value;
+const LS={get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+let FAV=LS.get('fav',[]),CUSTOM=LS.get('custom',[]),PANTRY=LS.get('pantry',[]),REM=LS.get('rem',[]),PHOTOS=LS.get('photos',{});
+function setTheme(t){document.body.className='theme-'+t;document.querySelectorAll('.t-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===t));try{localStorage.setItem('appTheme',t);}catch(e){}}
+function toast(m){const x=document.getElementById('toast');x.textContent=m;x.classList.add('show');clearTimeout(x._t);x._t=setTimeout(()=>x.classList.remove('show'),2500);}
+function fallbackCopy(t){const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.focus();a.select();try{document.execCommand('copy');toast('📋 Скопировано!');}catch(e){toast('❌ Ошибка');}document.body.removeChild(a);}
+function doCopy(t){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>toast('📋 Скопировано!')).catch(()=>fallbackCopy(t));}else{fallbackCopy(t);}}
+function ensureNotif(){if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();}
+function notify(t,b){if('Notification' in window&&Notification.permission==='granted'){try{new Notification(t,{body:b});}catch(e){}}}
+function speak(t){if('speechSynthesis' in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ru-RU';speechSynthesis.speak(u);}}
+let audioCtx=null;
+function beep(){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=880;o.type='sine';g.gain.setValueAtTime(0.001,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.4,audioCtx.currentTime+0.02);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.6);o.start();o.stop(audioCtx.currentTime+0.6);}catch(e){}}
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drawIcon(size){const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,size,size);g.addColorStop(0,'#9d0208');g.addColorStop(.45,'#d90429');g.addColorStop(1,'#ff8500');rr(x,0,0,size,size,size*0.22);x.fillStyle=g;x.fill();const bw=size*0.64,bh=size*0.46,bx=(size-bw)/2,by=size*0.28,gap=size*0.02;x.fillStyle='#f7f0dd';rr(x,bx,by,bw/2-gap,bh,size*0.05);x.fill();rr(x,bx+bw/2+gap,by,bw/2-gap,bh,size*0.05);x.fill();x.textAlign='center';x.textBaseline='middle';x.font=Math.round(size*0.20)+'px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';x.fillText('🥧',size*0.35,size*0.51);x.fillText('🌶️',size*0.65,size*0.51);return c.toDataURL('image/png');}
+(function(){const i192=drawIcon(192),i512=drawIcon(512);const add=(rel,href,sz)=>{const l=document.createElement('link');l.rel=rel;l.href=href;if(sz)l.sizes=sz;document.head.appendChild(l);};add('icon',i192,'192x192');add('apple-touch-icon',i192);const mf={name:'Кулинарная книга',short_name:'Рецепты',start_url:'./',display:'standalone',background_color:'#fff4e8',theme_color:'#c1121f',icons:[{src:i192,sizes:'192x192',type:'image/png'},{src:i512,sizes:'512x512',type:'image/png'}]};add('manifest',URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/manifest+json'})));})();
+
+/* ============ 📚 РЕЦЕПТЫ ============ */
+const RECIPES=[
+{cat:'🥫 Соусы и закуски',id:'chili',icon:'🌶️',title:'Чили-соус',sub:'Острота, копчение, таймеры',
+full:{intro:'Домашний сладкий чили-соус как в азиатских ресторанах. Хранится до 2 лет.',
+steps:[{t:'Подготовка перца',d:'Удали только хвостики. Семена оставь — в них острота.'},{t:'Измельчение',d:'Пробей перец и чеснок с 150 мл воды. Перчатки!'},
+{t:'Варка основы',d:'Сахар, уксус, соль (+копчёная паприка). Варите 4 минуты.'},{t:'Загущение',d:'Крахмал в 50 мл воды, влей, вари 1 минуту.'},{t:'Консервация',d:'Разливай кипящим. Не переворачивать.'}],
+secrets:['🚬 Копчёная паприка даёт дымок.','🥄 Капля держит форму 3–5 сек — идеально.','⏳ Отдохни 24–48 ч.'],
+problems:[{p:'Жидкий',s:'+1 ч.л. крахмала.'},{p:'Острый',s:'Мёд/кокосовое молоко.'},{p:'Сладкий',s:'+уксус.'}],
+serving:'К креветкам, наггетсам, рису.'},
+state:{spice:50,smoked:'no'},
+slider:{key:'spice',min:0,max:100,def:50,label:s=>{let n='Мягкий 🌶️';if(s.spice>20)n='Средний 🌶️️';if(s.spice>50)n='Острый 🌶️🌶️️';if(s.spice>80)n='Огненный 🌶️️🌶️️';return n+' · '+s.spice+'%';}},
+couple:{a:'hotPepper',b:'sweetPepper',total:300},
+modes:[{label:'🚬 Копчёность',key:'smoked',options:[{id:'no',label:'❌ Нет'},{id:'yes',label:'🚬 Паприка'}]}],
+ingredients:[
+{key:'hotPepper',name:'Острый перец',emoji:'🔴',base:150,unit:'г'},
+{key:'sweetPepper',name:'Сладкий перец',emoji:'🟢',base:150,unit:'г'},
+{key:'garlic',name:'Чеснок',emoji:'🧄',base:50,unit:'г'},
+{key:'sugar',name:'Сахар',emoji:'🍚',base:200,unit:'г',conv:{u:'ст.л.',per:25}},
+{key:'vinegar',name:'Уксус',emoji:'🍶',base:200,unit:'мл'},
+{key:'water',name:'Вода',emoji:'💧',base:200,unit:'мл'},
+{key:'salt',name:'Соль',emoji:'🧂',base:11,unit:'г',conv:{u:'ч.л.',per:10}},
+{key:'starch',name:'Крахмал',emoji:'🌽',base:15,unit:'г',conv:{u:'ст.л.',per:15}},
+{key:'smokedPaprika',name:'Копчёная паприка',emoji:'🚬',base:10,unit:'г',visible:s=>s.smoked==='yes'}],
+badge:r=>`🧂 СОЛЬ: ${fmt(num(Eng.inp(r,'salt').value),1)} г`,
+yield:r=>`📦 Выход: <b>${Math.round(750*r.factor)}–${Math.round(800*r.factor)} мл</b>`,
+prices:{hotPepper:300,sweetPepper:200,garlic:400,sugar:70,vinegar:120,water:0,salt:30,starch:100,smokedPaprika:500},
+steps:[{t:'Измельчи.',tm:0},{t:'Добавь сахар/уксус/соль.',tm:0},{t:'Вари 4 мин.',tm:240},{t:'Разведи крахмал.',tm:0},{t:'Влей, вари 1 мин.',tm:60},{t:'Разлей кипящим.',tm:0}],
+tips:[{title:'🫙 Консервация',html:'<ul class="tips"><li>Разливай кипящим.</li><li>Хранение до 2 лет.</li></ul>'}]},
+
+{cat:'🥐 Выпечка и тесто',id:'pastry',icon:'🥧',title:'Песочное тесто',sub:'Классика, творожное, разрыхлитель',
+full:{intro:'Французское pâte sablée: мука × ½ масла × ⅓ сахара.',
+steps:[{t:'Сухие',d:'Мука + пудра + соль (+разрыхлитель).'},{t:'Масло',d:'Холодное, в крошку.'},{t:'Замес',d:'Желток + ледяная вода (+творог), 2–3 мин.'},{t:'Отдых',d:'Холодильник ≥ 30 мин.'},{t:'Раскатка',d:'Между пергаментом, наколоть.'},{t:'Выпекание',d:'Слепое 190°C 15 мин + 5–7 мин.'}],
+secrets:['🧊 Всё холодное.','🥛 Творог 100 г — нежнее.','🌰 Миндальная мука 10–20%.'],
+problems:[{p:'Крошка',s:'+вода.'},{p:'Липнет',s:'В холод.'},{p:'Стянулось',s:'Отдых 30 мин.'}],
+serving:'Тарты, корзиночки, печенье.'},
+state:{sweet:'sweet',egg:'yolk',leaven:'none',curd:'no'},
+modes:[
+{label:'🍰 Тип',key:'sweet',options:[{id:'sweet',label:'🍬 Сладкое'},{id:'savory',label:'🧀 Несладкое'}]},
+{label:'🥚 Яйцо',key:'egg',options:[{id:'yolk',label:'🥚 Желток'},{id:'whole',label:'🍳 Целое'}]},
+{label:'🫧 Разрыхлитель',key:'leaven',options:[{id:'none',label:'❌ Нет'},{id:'yes',label:'✅ Да'}]},
+{label:'🥛 Творог',key:'curd',options:[{id:'no',label:'❌ Нет'},{id:'yes',label:'🥛 Да'}]}],
+ingredients:[
+{key:'flour',name:'Мука',emoji:'🌾',base:300,unit:'г',conv:{u:'стакана',per:150}},
+{key:'butter',name:'Масло',emoji:'🧈',base:s=>s.curd==='yes'?110:150,unit:'г',conv:{u:'ст.л.',per:20}},
+{key:'sugar',name:'Пудра',emoji:'🍬',base:s=>s.sweet==='sweet'?100:50,unit:'г',conv:{u:'ст.л.',per:20}},
+{key:'egg',name:s=>s.egg==='yolk'?'Желток':'Яйцо',emoji:'🥚',base:s=>s.egg==='yolk'?20:50,unit:'г'},
+{key:'salt',name:'Соль',emoji:'🧂',base:3,unit:'г'},
+{key:'leaven',name:'Разрыхлитель',emoji:'🫧',base:5,unit:'г',visible:s=>s.leaven==='yes'},
+{key:'curd',name:'Творог',emoji:'🥛',base:100,unit:'г',visible:s=>s.curd==='yes'},
+{key:'water',name:'Вода ледяная',emoji:'🧊',base:15,unit:'мл'}],
+badge:r=>{const f=num(Eng.inp(r,'flour').value)||1;return `🧈 Масло ${fmt(num(Eng.inp(r,'butter').value)/f*100,0)}% от муки`;},
+warning:r=>r.state.leaven==='yes'?'⚠️ С разрыхлителем: выпекать сразу!':null,
+yield:r=>{let t=0;Eng.visible(r).forEach(i=>t+=num(Eng.inp(r,i.key).value));return `🥧 Выход: <b>~${fmt(t,0)} г</b>`;},
+prices:{flour:60,butter:900,sugar:150,egg:150,salt:30,leaven:200,curd:400,water:0},
+steps:[{t:'Сухие.',tm:0},{t:'Масло в крошку.',tm:0},{t:'Замес.',tm:0},{t:'Отдых.',tm:1800},{t:'Раскатай.',tm:0},{t:'Слепое 190°C.',tm:900},{t:'Допеки.',tm:420}],
+tips:[{title:'🎨 Хранение',html:'<ul class="tips"><li>В холодильнике до 3 дней.</li></ul>'}]},
+
+{cat:'🫙 Заготовки на зиму',id:'pepper',icon:'🫑',title:'Маринованный перец',sub:'Расчёт на банку 0,5 л',
+full:{intro:'Слабо маринованный перец без кожицы и масла. Расчёт от банки 0,5 л.',
+steps:[{t:'Подготовка',d:'Пополам, удалить семена.'},{t:'Запекание',d:'250°C, 12–15 мин.'},{t:'Отдых',d:'Под крышкой 20–30 мин.'},{t:'Закладка специй (ДО перца)',d:'На дно банки: чеснок, душистый перец, кардамон, гвоздика, кориандр, соль, сахар, уксус.'},{t:'Укладка',d:'Снять кожицу, уложить, разлить сок.'},{t:'Заливка',d:'Кипяток до горлышка.'},{t:'Стерилизация',d:'0,5 л — 15 мин.'},{t:'Остывание',d:'Не переворачивать.'}],
+secrets:['🫙 ~0,9 кг перца на банку.','🧂 Специи — ДО перца.','💧 Сок — в банки.'],
+problems:[{p:'Кожица',s:'Дольше под крышкой.'},{p:'Воздух',s:'Нож + кипяток.'}],
+serving:'Закуска к столу!'},
+state:{vinegar:'mild',hot:'no',purpose:'marinade',honey:'no'},
+modes:[
+{label:'🎯 Назначение',key:'purpose',options:[{id:'marinade',label:'🫙 Мариновать'},{id:'freeze',label:'🧊 Заморозка'}]},
+{label:'🍶 Уксус',key:'vinegar',options:[{id:'mild',label:'🍎 5–6%'},{id:'strong',label:'🧪 9%'}]},
+{label:'🌶 Острота',key:'hot',options:[{id:'no',label:'😌 Нет'},{id:'yes',label:'🌶 Да'}]},
+{label:'🍯 Мёд',key:'honey',options:[{id:'no',label:'❌ Нет'},{id:'yes',label:'🍯 Да'}]}],
+ingredients:[
+{key:'jars',name:'Банки 0,5 л',emoji:'🫙',base:6,unit:'шт'},
+{key:'pepper',name:'Сладкий перец',emoji:'🫑',base:5400,unit:'г',conv:{u:'кг',per:1000}},
+{key:'hotpepper',name:'Острый перчик',emoji:'🌶️',base:6,unit:'шт',visible:s=>s.hot==='yes'&&s.purpose==='marinade'},
+{key:'garlic',name:'Чеснок',emoji:'🧄',base:12,unit:'зуб',visible:s=>s.purpose==='marinade'},
+{key:'allspice',name:'Душистый перец',emoji:'🟤',base:12,unit:'шт',visible:s=>s.purpose==='marinade'},
+{key:'cardamom',name:'Кардамон',emoji:'🌰',base:6,unit:'шт',visible:s=>s.purpose==='marinade'},
+{key:'cloves',name:'Гвоздика',emoji:'🌸',base:6,unit:'шт',visible:s=>s.purpose==='marinade'},
+{key:'coriander',name:'Кориандр',emoji:'🌿',base:1.5,unit:'ч.л.',visible:s=>s.purpose==='marinade'},
+{key:'salt',name:'Соль',emoji:'🧂',base:33,unit:'г',visible:s=>s.purpose==='marinade'},
+{key:'sugar',name:'Сахар',emoji:'🍬',base:s=>s.honey==='yes'?90:165,unit:'г',visible:s=>s.purpose==='marinade'},
+{key:'honey',name:'Мёд',emoji:'🍯',base:90,unit:'г',visible:s=>s.honey==='yes'&&s.purpose==='marinade'},
+{key:'vinegar',name:'Уксус',emoji:'🍶',base:s=>s.vinegar==='mild'?180:90,unit:'мл',visible:s=>s.purpose==='marinade'}],
+badge:r=>`🫙 Банок 0,5 л: ~${fmt(num(Eng.inp(r,'jars').value),1)} шт`,
+yield:r=>{const j=num(Eng.inp(r,'jars').value);return `🫑 Нужно перца: <b>~${fmt(j*0.9,2)} кг</b>`;},
+prices:{jars:15,pepper:120,hotpepper:300,garlic:300,allspice:500,cardamom:2000,cloves:1500,coriander:300,salt:30,sugar:80,honey:400,vinegar:100},
+steps:[{t:'Запеки перец.',tm:900},{t:'Отдых.',tm:1500},{t:'Специи на дно.',tm:0},{t:'Уложи.',tm:0},{t:'Стерилизуй 15 мин.',tm:900},{t:'Остуди.',tm:0}],
+tips:[{title:'🫙 Хранение',html:'<ul class="tips"><li>Готов на следующий день.</li></ul>'}]},
+
+{cat:'🐟 Рыба и засолка',id:'mackerel',icon:'🐟',title:'Провесная скумбрия',sub:'Рассол или сухой посол',
+full:{intro:'После засолки рыбу подвешивают для подвяливания — деликатес.',
+steps:[{t:'Подготовка',d:'Выпотроши, удали чёрную плёнку.'},{t:'Рассол',d:'1 л воды + соль + сахар + специи, остуди.'},{t:'Засолка',d:'Холодильник 3 суток.'},{t:'Подвяливание',d:'0–10°C, 3 суток.'}],
+secrets:['🖤 Чёрная плёнка = горечь.','🌡️ Вяль при 0–10°C.'],
+problems:[{p:'Горчит',s:'Плёнка.'},{p:'Пересол',s:'Меньше время.'}],
+serving:'С картофелем и луком.'},
+state:{method:'brine'},
+modes:[{label:'🧂 Способ',key:'method',options:[{id:'brine',label:'🌊 Рассол'},{id:'dry',label:'🧂 Сухой'}]}],
+ingredients:[
+{key:'mackerel',name:'Скумбрия',emoji:'🐟',base:3,unit:'шт'},
+{key:'water',name:'Вода',emoji:'💧',base:1000,unit:'мл',visible:s=>s.method==='brine'},
+{key:'salt',name:'Соль',emoji:'🧂',base:75,unit:'г'},
+{key:'sugar',name:'Сахар',emoji:'🍬',base:5,unit:'г'},
+{key:'bay',name:'Лавр',emoji:'🍃',base:2,unit:'шт'},
+{key:'blackpep',name:'Чёрный перец',emoji:'⚫',base:10,unit:'шт'},
+{key:'allspice',name:'Душистый',emoji:'🟤',base:4,unit:'шт'},
+{key:'coriander',name:'Кориандр',emoji:'🌿',base:2.5,unit:'г'},
+{key:'mustard',name:'Горчица семена',emoji:'🟡',base:2.5,unit:'г'}],
+badge:r=>`🐟 Тушек: ${fmt(num(Eng.inp(r,'mackerel').value),1)}`,
+yield:r=>`🐟 Выход: <b>${fmt(num(Eng.inp(r,'mackerel').value),1)} тушек</b>`,
+prices:{mackerel:150,water:0,salt:30,sugar:80,bay:0,blackpep:0,allspice:0,coriander:300,mustard:300},
+steps:[{t:'Подготовь.',tm:0},{t:'Рассол.',tm:120},{t:'Засолка 3 сут.',tm:0},{t:'Вяление 3 сут.',tm:0}],
+tips:[{title:'🐟 Хранение',html:'<ul class="tips"><li>В пергаменте до недели.</li></ul>'}]},
+
+{cat:'🍰 Кексы и пироги',id:'orangecake',icon:'🍊',title:'Апельсиновый кекс',sub:'На кефире и растительном масле',
+full:{intro:'Влажный пористый кекс с ярким цитрусом и красивой шапочкой. Растительное масло даёт нежность на 3 дня, кефир гасит соду и ослабляет глютен, цедра несёт 90% аромата.',
+steps:[
+{t:'Подготовка',d:'Духовка <b>170°C</b> (верх+низ, без конвекции). Металл/чугун — смазать маслом и присыпать мукой; силикон — не нужно.'},
+{t:'Жидкие',d:'Кефир <b>комнатной t</b> + растительное масло + яйца + <b>50 мл сока</b>. Взбить венчиком до однородности.'},
+{t:'Сухие + цедра',d:'Просеять муку, добавить сахар, разрыхлитель, соду, соль, ваниль и <b>цедру</b>. Перемешать венчиком.'},
+{t:'Соединение',d:'Влить жидкое к сухим. Мешать лопаткой <b>ровно до исчезновения сухих островков</b> — дальше не мешать.'},
+{t:'Выпечка',d:'170°C, <b>40–55 мин</b>. Шпажка из центра — сухая. Если верх быстро румянится — накрыть фольгой через 30 мин.'},
+{t:'Пропитка',d:'Горячий кекс проколоть шпажкой в 10–15 мест, полить сиропом (сок+сахар). Остудить в форме ~1 час.'}],
+secrets:[
+'🍊 Перетри цедру с сахаром пальцами — эфирные масла раскроются ярче.',
+'🌡 Все ингредиенты комнатной температуры — равномерный подъём.',
+'🥄 Мешай до исчезновения муки, не дольше — иначе резина.',
+'🧪 Кефир гасит соду; разрыхлитель страхует подъём от нагрева.',
+'⏳ На 2-й день кекс ещё вкуснее — ароматы смешиваются.'],
+problems:[
+{p:'Осел центр',s:'Мало муки или долго мешали / рано открыли духовку.'},
+{p:'Резиновый',s:'Перемешали после соединения — развивался глютен.'},
+{p:'Забитый «кирпич»',s:'Много муки (>280 г) — держи 260 г.'},
+{p:'Мыльный привкус',s:'Сода не погасилась: кефир холодный или мало кислоты.'},
+{p:'Верх горит',s:'Накрой фольгой через 30 мин выпечки.'}],
+serving:'Нарезать после полного остывания. Хранить 3 дня в плёнке; вкуснее на 2-й день.'},
+state:{soak:'yes'},
+modes:[{label:'🍯 Пропитка',key:'soak',options:[{id:'yes',label:'💧 С пропиткой'},{id:'no',label:'❌ Без пропитки'}]}],
+ingredients:[
+{key:'flour',name:'Мука пшеничная в/с',emoji:'🌾',base:260,unit:'г',conv:{u:'стакана',per:160}},
+{key:'sugar',name:'Сахар',emoji:'🍬',base:180,unit:'г',conv:{u:'ст.л.',per:25}},
+{key:'bakingpowder',name:'Разрыхлитель',emoji:'🫧',base:5,unit:'г',conv:{u:'ч.л.',per:5}},
+{key:'soda',name:'Сода пищевая',emoji:'🥄',base:3,unit:'г',conv:{u:'ч.л.',per:7}},
+{key:'salt',name:'Соль',emoji:'🧂',base:3,unit:'г',conv:{u:'ч.л.',per:7}},
+{key:'kefir',name:'Кефир 2.5–3.2%',emoji:'🥛',base:200,unit:'мл',conv:{u:'стакана',per:250}},
+{key:'oil',name:'Масло растительное',emoji:'🫒',base:100,unit:'мл',conv:{u:'ст.л.',per:15}},
+{key:'eggs',name:'Яйца С1',emoji:'🥚',base:2,unit:'шт'},
+{key:'vansugar',name:'Ванильный сахар',emoji:'🍦',base:10,unit:'г',conv:{u:'ч.л.',per:5}},
+{key:'orange',name:'Апельсин (цедра)',emoji:'🍊',base:1,unit:'шт'},
+{key:'juice',name:'Сок апельсиновый (в тесто)',emoji:'🧃',base:50,unit:'мл',conv:{u:'ст.л.',per:15}},
+{key:'soakjuice',name:'Сок для пропитки',emoji:'💧',base:50,unit:'мл',conv:{u:'ст.л.',per:15},visible:s=>s.soak==='yes'},
+{key:'soaksugar',name:'Сахар для пропитки',emoji:'🍬',base:15,unit:'г',conv:{u:'ст.л.',per:25},visible:s=>s.soak==='yes'}],
+badge:r=>`🌾 Мука: ${fmt(num(Eng.inp(r,'flour').value),0)} г · 🍊 цедра 1 апельсина`,
+yield:r=>{let t=0;Eng.visible(r).forEach(i=>t+=num(Eng.inp(r,i.key).value));return `🍰 Выход: 1 кекс (~${fmt(t,0)} г)`;},
+prices:{flour:60,sugar:90,bakingpowder:300,soda:100,salt:30,kefir:120,oil:150,eggs:15,vansugar:500,orange:50,juice:200,soakjuice:200,soaksugar:90},
+steps:[{t:'Духовка 170°C, форма.',tm:0},{t:'Смешай жидкие.',tm:0},{t:'Сухие + цедра.',tm:0},{t:'Соедини (не перемешать!).',tm:0},{t:'Выпекание 40–55 мин.',tm:2700},{t:'Пропитка и остывание.',tm:0}],
+tips:[{title:'🍰 Хранение и подача',html:'<ul class="tips"><li>3 дня в плёнке при комнатной t.</li><li>Вкуснее на 2-й день.</li><li>Можно заморозить целиком до месяца.</li></ul>'}]}
+];
+
+/* ============ ДВИЖОК ============ */
+const Eng={
+cur:null,_shop:[],_photoTarget:null,
+find:id=>RECIPES.find(r=>r.id===id),
+R:(r,x)=>document.getElementById(r.id+'_'+x),
+inp:(r,k)=>document.getElementById(r.id+'_in_'+k),
+base:(i,st)=>typeof i.base==='function'?i.base(st):i.base,
+name:(i,st)=>typeof i.name==='function'?i.name(st):i.name,
+conv:(i,st)=>typeof i.conv==='function'?i.conv(st):i.conv,
+visible:r=>r.ingredients.filter(i=>!i.visible||i.visible(r.state)),
+openPanel(id){document.getElementById(id).style.display='flex';},
+closePanel(id){document.getElementById(id).style.display='none';},
+toggleFav(id){if(FAV.includes(id))FAV=FAV.filter(x=>x!==id);else FAV.push(id);LS.set('fav',FAV);this.buildMenu(val('searchInput'));},
+cardHTML(r){return `<div class="menu-card" onclick="Eng.open('${r.id}')"><button class="star" onclick="event.stopPropagation();Eng.toggleFav('${r.id}')">${FAV.includes(r.id)?'⭐':'☆'}</button><span class="menu-icon">${r.icon}</span><div class="menu-title">${r.title}</div><div class="menu-sub">${r.sub||''}</div></div>`;},
+buildMenu(q){q=(q||'').toLowerCase();let list=RECIPES.filter(r=>!q||r.title.toLowerCase().includes(q)||r.ingredients.some(i=>(typeof i.name==='string'?i.name:'').toLowerCase().includes(q)));
+const favs=list.filter(r=>FAV.includes(r.id)),rest=list.filter(r=>!FAV.includes(r.id));const cats=[];rest.forEach(r=>{if(!cats.includes(r.cat))cats.push(r.cat);});
+let html='';if(favs.length)html+=`<div class="cat-block"><div class="cat-title">⭐ Избранное</div><div class="cat-grid">${favs.map(r=>this.cardHTML(r)).join('')}</div></div>`;
+html+=cats.map(c=>`<div class="cat-block"><div class="cat-title">${c}</div><div class="cat-grid">${rest.filter(r=>r.cat===c).map(r=>this.cardHTML(r)).join('')}</div></div>`).join('');
+document.getElementById('menuGrid').innerHTML=html||'<p class="hint" style="text-align:center">Ничего не найдено</p>';},
+toMenu(){this.cur=null;document.getElementById('screen-recipe').classList.remove('active');document.getElementById('screen-menu').classList.add('active');document.getElementById('backBtn').style.display='none';document.getElementById('mainTitle').textContent='📖 Кулинарная книга';document.getElementById('mainSub').textContent='Выберите категорию и рецепт';window.scrollTo(0,0);},
+renderIntro(r){return r.full&&r.full.intro?`<div class="full-recipe"><div class="intro">${r.full.intro}</div></div>`:'';},
+renderHow(r){if(!r.full)return '';const f=r.full;const st=(f.steps||[]).map((s,i)=>`<div class="step"><div class="step-num">${i+1}</div><div class="step-body"><div class="step-title">${s.t}</div><div class="step-desc">${s.d}</div></div></div>`).join('');const se=(f.secrets||[]).map(s=>`<div class="secret">${s}</div>`).join('');const pr=(f.problems||[]).length?`<table class="problem-tbl"><thead><tr><th>❌</th><th>✅</th></tr></thead><tbody>${f.problems.map(p=>`<tr><td>${p.p}</td><td>${p.s}</td></tr>`).join('')}</tbody></table>`:'';const sv=f.serving?`<div class="serving"><b>🍽️ Подача:</b> ${f.serving}</div>`:'';return `<div class="full-recipe"><h2>👩‍ Как готовить</h2>${st}${se?`<h3>💡 Секреты</h3><div class="secrets">${se}</div>`:''}${pr}${sv}</div>`;},
+open(id){const r=this.find(id);this.cur=r;r.factor=r.factor||1;r.checked=r.checked||new Set();
+const rows=r.ingredients.map(i=>{const c=i.conv?'<div class="conv" id="'+r.id+'_conv_'+i.key+'"></div>':'';const s=i.sub?'<div class="sub">'+i.sub+'</div>':'';return `<div class="ingredient" id="${r.id}_row_${i.key}"><input type="checkbox" class="chk" id="${r.id}_chk_${i.key}" onchange="Eng.toggleCheck('${r.id}','${i.key}',this.checked)"><div class="emoji">${i.emoji}</div><div class="info"><div class="name" id="${r.id}_name_${i.key}"></div>${s}${c}</div><input type="text" inputmode="decimal" autocomplete="off" id="${r.id}_in_${i.key}" oninput="Eng.recalc('${r.id}','${i.key}',this.value)"><div class="unit">${i.unit}</div></div>`;}).join('');
+const slider=r.slider?`<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:10px;"><h2>🔥 Острота</h2><span id="${r.id}_sLabel" style="font-weight:700;color:var(--accent)"></span></div><input type="range" id="${r.id}_slider" min="${r.slider.min}" max="${r.slider.max}" value="${r.state[r.slider.key]}" oninput="Eng.onSlider('${r.id}',this.value)" style="width:100%;accent-color:var(--accent)"></div>`:'';
+const modes=r.modes?`<div class="card modes">`+r.modes.map(m=>`<div><div class="mode-label">${m.label}</div><div class="mode-row">${m.options.map(o=>`<button class="mode-btn" data-mk="${m.key}" data-mv="${o.id}" onclick="Eng.setMode('${r.id}','${m.key}','${o.id}')">${o.label}</button>`).join('')}</div></div>`).join('')+`</div>`:'';
+const tips=(r.tips||[]).map(t=>`<details><summary>${t.title}</summary>${t.html}</details>`).join('');
+document.getElementById('recipeBox').innerHTML=`<img class="recipe-photo" id="${r.id}_photo" style="display:none" alt="">${this.renderIntro(r)}<div class="banner">Пропорция: ×<b id="${r.id}_mult"></b></div>${slider}${modes}<div class="card"><h2>${r.icon} Состав</h2><p class="hint">Отмечайте ✓. Измените поле — всё пересчитается.</p>${rows}<div class="ratio-badge" id="${r.id}_badge"></div><div class="leaven-warn" id="${r.id}_warn" style="display:none"></div><div class="progress" id="${r.id}_prog"></div></div><div class="yield" id="${r.id}_yield"></div>${this.renderHow(r)}<button class="btn" onclick="Eng.openCook('${r.id}')">👨‍🍳 Режим готовки</button><details><summary>💰 Себестоимость</summary><div id="${r.id}_costRows"></div><div class="cost-total"><span id="${r.id}_costTotal"></span><span id="${r.id}_costPer100"></span></div></details>${tips}<button class="btn secondary" onclick="Eng.copyList('${r.id}')">📋 Список</button><button class="btn secondary" onclick="Eng.attachPhoto(Eng.cur)">📸 Фото</button><button class="btn secondary" onclick="window.print()">🖨 Печать</button><button class="btn secondary" onclick="Eng.shareCard(Eng.cur)">📤 Карточка</button><button class="btn secondary" onclick="Eng.resetAll('${r.id}')">🔄 Сброс</button><div class="cook-overlay" id="${r.id}_cook"><div class="cook-box"><h2>👨‍ Готовим</h2><div class="cook-step" id="${r.id}_stepT"></div><div class="cook-timer" id="${r.id}_timer">--:--</div><div class="cook-controls"><button class="timer-btn" id="${r.id}_tBtn" onclick="Eng.toggleTimer('${r.id}')">▶ Старт</button><button class="next-btn" onclick="Eng.nextStep('${r.id}')">Далее →</button><button class="next-btn" onclick="Eng.speakStep(Eng.cur)">🔊</button></div><div class="cook-progress" id="${r.id}_stepP"></div><button class="cook-close" onclick="Eng.setReminder(Eng.cur)">⏳ Напомнить о готовности</button><button class="cook-close" onclick="Eng.closeCook('${r.id}')">✕ Закрыть</button></div></div>`;
+document.getElementById('screen-menu').classList.remove('active');document.getElementById('screen-recipe').classList.add('active');document.getElementById('backBtn').style.display='block';document.getElementById('mainTitle').textContent=r.icon+' '+r.title;document.getElementById('mainSub').textContent=r.sub||'';
+this.buildCost(r);this.load(r);this.refresh(r);this.refreshPhoto(r);window.scrollTo(0,0);},
+refreshPhoto(r){const el=this.R(r,'photo');if(!el)return;if(PHOTOS[r.id]){el.src=PHOTOS[r.id];el.style.display='block';}else{el.style.display='none';}},
+attachPhoto(r){this._photoTarget=r.id;this.openPanel('panelPhoto');},
+pickPhoto(mode){const id=this._photoTarget;const r=this.find(id);const inp=document.createElement('input');inp.type='file';inp.accept='image/*';if(mode==='cam')inp.setAttribute('capture','environment');inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');const sc=Math.min(1,600/img.width);c.width=img.width*sc;c.height=img.height*sc;c.getContext('2d').drawImage(img,0,0,c.width,c.height);PHOTOS[id]=c.toDataURL('image/jpeg',0.7);LS.set('photos',PHOTOS);Eng.closePanel('panelPhoto');Eng.refreshPhoto(r);toast('📸 Фото добавлено');};img.src=rd.result;};rd.readAsDataURL(f);};inp.click();},
+removePhoto(){delete PHOTOS[this._photoTarget];LS.set('photos',PHOTOS);this.refreshPhoto(this.find(this._photoTarget));this.closePanel('panelPhoto');toast('🗑 Фото убрано');},
+shareCard(r){const items=this.visible(r);const H=220+items.length*44+120;const c=document.createElement('canvas');c.width=800;c.height=H;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,800,H);g.addColorStop(0,'#c1121f');g.addColorStop(1,'#ff8500');x.fillStyle=g;x.fillRect(0,0,800,H);x.fillStyle='#fff';x.font='bold 52px sans-serif';x.fillText(r.icon+' '+r.title,40,80);x.font='28px sans-serif';let y=150;items.forEach(i=>{x.fillText(`${i.emoji} ${this.name(i,r.state)}: ${this.inp(r,i.key).value} ${i.unit}`,40,y);y+=44;});if(r.yield)x.fillText(r.yield(r).replace(/<[^>]+>/g,''),40,y+10);const a=document.createElement('a');a.download=r.id+'-card.png';a.href=c.toDataURL('image/png');a.click();toast('📤 Карточка сохранена');},
+setIf(r,k,v){const i=this.inp(r,k);if(document.activeElement!==i)i.value=fmt(v,1);},
+valueFor(r,i){if(r.couple){const pct=r.slider?r.state[r.slider.key]:50,t=r.couple.total*r.factor;if(i.key===r.couple.a)return t*pct/100;if(i.key===r.couple.b)return t-t*pct/100;}return this.base(i,r.state)*r.factor;},
+recalc(id,key,v){const r=this.find(id);v=num(v);if(v<=0)return;if(r.couple&&(key===r.couple.a||key===r.couple.b)){const a=num(this.inp(r,r.couple.a).value),b=num(this.inp(r,r.couple.b).value),t=a+b;if(t<=0)return;r.factor=t/r.couple.total;if(r.slider){r.state[r.slider.key]=Math.round(a/t*100);this.R(r,'slider').value=r.state[r.slider.key];}}else{const B={};this.visible(r).forEach(i=>B[i.key]=this.base(i,r.state));r.factor=v/B[key];}if(!isFinite(r.factor)||r.factor<=0)return;this.refresh(r);},
+onSlider(id,v){const r=this.find(id);r.state[r.slider.key]=parseInt(v)||0;this.refresh(r);},
+setMode(id,k,v){const r=this.find(id);r.state[k]=v;this.refresh(r);},
+refresh(r){this.visible(r).forEach(i=>this.setIf(r,i.key,this.valueFor(r,i)));if(r.slider&&r.slider.label)this.R(r,'sLabel').textContent=r.slider.label(r.state);document.querySelectorAll('.mode-btn').forEach(b=>{if(this.cur===r)b.classList.toggle('active',r.state[b.dataset.mk]===b.dataset.mv);});r.ingredients.forEach(i=>{const row=this.R(r,'row_'+i.key);if(row)row.style.display=(!i.visible||i.visible(r.state))?'flex':'none';const nm=this.R(r,'name_'+i.key);if(nm)nm.textContent=this.name(i,r.state);const cv=this.R(r,'conv_'+i.key);const c=this.conv(i,r.state);if(cv&&c){cv.textContent=`${fmt(num(this.inp(r,i.key).value),1)} ${i.unit} ≈ ${fmt(num(this.inp(r,i.key).value)/c.per,1)} ${c.u}`;}});if(r.badge)this.R(r,'badge').textContent=r.badge(r);const w=this.R(r,'warn');if(w){const t=r.warning?r.warning(r):null;w.style.display=t?'block':'none';if(t)w.textContent=t;}this.R(r,'mult').textContent=r.factor.toFixed(2);if(r.yield)this.R(r,'yield').innerHTML=r.yield(r);this.R(r,'prog').textContent=`🍳 ✓ ${r.checked.size} из ${this.visible(r).length}`;this.updCost(r);this.save(r);},
+updCost(r){let t=0;this.visible(r).forEach(i=>{const p=num(this.R(r,'price_'+i.key).value),a=num(this.inp(r,i.key).value);const c=(i.unit==='шт')?a*p:(a/1000*p);t+=c;this.R(r,'camt_'+i.key).textContent=`${fmt(a,1)} ${i.unit}`;this.R(r,'cline_'+i.key).textContent=c>0?`${c.toFixed(1)} ₽`:'—';});this.R(r,'costTotal').textContent=`Итого: ${fmt(t,0)} ₽`;const j=num(this.inp(r,'jars').value),f=num(this.inp(r,'mackerel').value);this.R(r,'costPer100').textContent=j?`≈ ${fmt(t/j,1)} ₽/банку`:(f?`≈ ${fmt(t/f,1)} ₽/тушку`:'');},
+buildCost(r){const w=this.R(r,'costRows');w.innerHTML='';r.ingredients.forEach(i=>{const p=r.prices&&r.prices[i.key]||0,u=i.unit==='г'?'кг':(i.unit==='мл'?'л':'шт');const n=typeof i.name==='string'?i.name:(typeof i.name==='function'?i.name(r.state):'');w.insertAdjacentHTML('beforeend',`<div class="cost-row"><div class="cost-top"><span>${i.emoji} ${n}</span><span class="cost-amt" id="${r.id}_camt_${i.key}"></span></div><div class="cost-bottom"><input type="text" inputmode="decimal" class="price-in" id="${r.id}_price_${i.key}" value="${p}" oninput="Eng.updCost(Eng.find('${r.id}'));Eng.save(Eng.find('${r.id}'))"><span class="cost-unit">₽/${u}</span><span class="cost-line" id="${r.id}_cline_${i.key}"></span></div></div>`);});},
+toggleCheck(id,k,v){const r=this.find(id);v?r.checked.add(k):r.checked.delete(k);this.refresh(r);},
+save(r){const p={};r.ingredients.forEach(i=>{const e=this.R(r,'price_'+i.key);if(e)p[i.key]=e.value;});try{localStorage.setItem('rc_'+r.id,JSON.stringify({f:r.factor,st:r.state,c:[...r.checked],p}));}catch(e){}},
+load(r){let s;try{s=JSON.parse(localStorage.getItem('rc_'+r.id));}catch(e){}if(!s)return;if(s.f)r.factor=s.f;if(s.st)Object.assign(r.state,s.st);if(s.c)r.checked=new Set(s.c);if(s.p)r.ingredients.forEach(i=>{const e=this.R(r,'price_'+i.key);if(e&&s.p[i.key]!==undefined)e.value=s.p[i.key];});if(r.slider&&this.R(r,'slider'))this.R(r,'slider').value=r.state[r.slider.key];},
+resetAll(id){const r=this.find(id);if(r.factor!==1&&r.checked.size>0&&!confirm('Сбросить?'))return;r.factor=1;r.checked.clear();if(r.slider)r.state[r.slider.key]=r.slider.def;this.refresh(r);toast('Сброшено');},
+copyList(id){const r=this.find(id);let t=`${r.icon} ${r.title.toUpperCase()} (×${r.factor.toFixed(2)}):\n`;this.visible(r).forEach(i=>t+=`${i.emoji} ${this.name(i,r.state)}: ${this.inp(r,i.key).value} ${i.unit}\n`);doCopy(t);},
+renderShop(){const map={};RECIPES.forEach(r=>{const st=LS.get('rc_'+r.id,null);if(!st||!st.c||!st.c.length)return;const f=st.f||1;st.c.forEach(k=>{const i=r.ingredients.find(x=>x.key===k);if(!i)return;const nm=typeof i.name==='string'?i.name:i.name(r.state||{});const key=nm+'|'+i.unit;map[key]=map[key]||{nm,unit:i.unit,val:0};map[key].val+=this.base(i,r.state||{})*f;});});this._shop=Object.values(map);document.getElementById('shopList').innerHTML=this._shop.length?this._shop.map(it=>`<div class="shop-item">🛒 ${it.nm} — <b>${fmt(it.val,1)} ${it.unit}</b></div>`).join(''):'<p class="hint">Отметьте ✓ ингредиенты в рецептах — они соберутся здесь.</p>';},
+copyShop(){if(!this._shop.length)return toast('Список пуст');doCopy('🛒 ПОКУПКИ:\n'+this._shop.map(it=>`${it.nm}: ${fmt(it.val,1)} ${it.unit}`).join('\n'));},
+addIngRow(){const d=document.createElement('div');d.className='row';d.innerHTML=`<input class="e" placeholder="🥕" style="max-width:50px"><input class="n" placeholder="Название"><input class="b" type="number" placeholder="Кол-во" style="max-width:80px"><input class="u" placeholder="г" style="max-width:50px">`;document.getElementById('addIng').appendChild(d);},
+addStepRow(){const d=document.createElement('div');d.className='row';d.innerHTML=`<input class="t" placeholder="Шаг"><input class="d" placeholder="Подробно">`;document.getElementById('addSteps').appendChild(d);},
+saveRecipe(){const title=val('addTitle').trim();if(!title)return toast('Введите название');
+const ings=[...document.querySelectorAll('#addIng .row')].map(row=>({name:row.querySelector('.n').value,emoji:row.querySelector('.e').value||'🍽',base:parseFloat(row.querySelector('.b').value)||0,unit:row.querySelector('.u').value||'г'})).filter(i=>i.name);
+const steps=[...document.querySelectorAll('#addSteps .row')].map(row=>({t:row.querySelector('.t').value,d:row.querySelector('.d').value})).filter(s=>s.t);
+if(!ings.length)return toast('Добавьте состав');
+const r={cat:val('addCat').trim()||'🍽 Домашние',id:'custom'+Date.now(),icon:val('addIcon').trim()||'🍽',title,sub:val('addIntro').slice(0,50),full:{intro:val('addIntro'),steps},state:{},ingredients:ings,steps:steps.map(s=>({t:s.t,tm:0})),prices:{},tips:[]};
+CUSTOM.push(r);LS.set('custom',CUSTOM);RECIPES.push(r);this.closePanel('panelAdd');this.buildMenu('');this.open(r.id);toast('✅ Рецепт добавлен');},
+pantryAdd(){const n=val('panName').trim(),d=parseInt(val('panDays'));if(!n||isNaN(d))return toast('Название и срок');PANTRY.push({id:Date.now(),name:n,days:d,from:Date.now()});LS.set('pantry',PANTRY);document.getElementById('panName').value='';document.getElementById('panDays').value='';this.renderPantry();},
+pantryDel(id){PANTRY=PANTRY.filter(p=>p.id!==id);LS.set('pantry',PANTRY);this.renderPantry();},
+renderPantry(){document.getElementById('panList').innerHTML=PANTRY.length?PANTRY.map(p=>{const left=Math.ceil((p.from+p.days*86400000-Date.now())/86400000);const em=left<0?'❌':left<=3?'⚠️':'✅';return `<div class="shop-item">${em} ${p.name} — ${left<0?'просрочено':left+' дн.'} <button class="tbtn" style="flex:0" onclick="Eng.pantryDel(${p.id})">✕</button></div>`;}).join(''):'<p class="hint">Пока пусто.</p>';},
+setReminder(r){const d=parseInt(prompt('Напомнить через сколько дней?','3'));if(isNaN(d))return;REM.push({id:Date.now(),text:r.title,when:Date.now()+d*86400000});LS.set('rem',REM);ensureNotif();toast('⏳ Напоминание через '+d+' дн.');},
+checkRem(){const now=Date.now();const due=REM.filter(x=>x.when<=now);if(due.length){REM=REM.filter(x=>x.when>now);LS.set('rem',REM);due.forEach(x=>{toast('⏳ '+x.text+' — пора!');notify('⏳ Кулинарная книга',x.text+' — пора!');});}},
+checkPantry(){const soon=PANTRY.filter(p=>(p.from+p.days*86400000-Date.now())/86400000<=3);if(soon.length){toast('🧊 Кладовая: проверьте сроки ('+soon.length+')');notify('🧊 Кладовая',soon.map(p=>p.name).join(', '));}},
+exportBackup(){const data={fav:FAV,custom:CUSTOM,pantry:PANTRY,rem:REM,photos:PHOTOS,states:{}};RECIPES.forEach(r=>{const s=localStorage.getItem('rc_'+r.id);if(s)data.states[r.id]=JSON.parse(s);});const a=document.createElement('a');a.download='cookbook-backup.json';a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));a.click();toast('💾 Копия скачана');},
+importBackup(file){if(!file)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result);FAV=d.fav||[];CUSTOM=d.custom||[];PANTRY=d.pantry||[];REM=d.rem||[];PHOTOS=d.photos||{};LS.set('fav',FAV);LS.set('custom',CUSTOM);LS.set('pantry',PANTRY);LS.set('rem',REM);LS.set('photos',PHOTOS);if(d.states)for(const k in d.states)localStorage.setItem('rc_'+k,JSON.stringify(d.states[k]));location.reload();}catch(e){toast('❌ Ошибка файла');}};rd.readAsText(file);},
+speakStep(r){if(!r)return;const s=r.steps[r.cookStep];speak(s.t+'. '+s.d);},
+openCook(id){const r=this.find(id);r.cookStep=0;this.R(r,'cook').style.display='flex';this.showStep(r);},
+closeCook(id){const r=this.find(id);this.R(r,'cook').style.display='none';this.stopTimer(r);if('speechSynthesis' in window)speechSynthesis.cancel();},
+showStep(r){const s=r.steps[r.cookStep];this.R(r,'stepT').textContent=s.t;this.R(r,'stepP').textContent=`Шаг ${r.cookStep+1} из ${r.steps.length}`;this.stopTimer(r);if(s.tm>0){r.tmTot=s.tm;r.tmRem=s.tm;this.renderTm(r);this.R(r,'tBtn').style.display='block';this.R(r,'tBtn').textContent='▶ Старт';}else{this.R(r,'timer').textContent='—';this.R(r,'tBtn').style.display='none';}},
+nextStep(id){const r=this.find(id);if(r.cookStep<r.steps.length-1){r.cookStep++;this.showStep(r);}else{this.closeCook(id);toast('🎉 Готово!');}},
+renderTm(r){const m=Math.floor(r.tmRem/60),s=r.tmRem%60;this.R(r,'timer').textContent=`${m}:${s.toString().padStart(2,'0')}`;},
+toggleTimer(id){const r=this.find(id);r.timerRunning?this.stopTimer(r):this.startTimer(r);},
+startTimer(r){ensureNotif();if(r.tmRem<=0)r.tmRem=r.tmTot;r.timerRunning=true;r.endTime=Date.now()+r.tmRem*1000;this.R(r,'tBtn').textContent='⏸ Пауза';r.tmInt=setInterval(()=>{r.tmRem=Math.max(0,Math.round((r.endTime-Date.now())/1000));this.renderTm(r);if(r.tmRem<=0){this.stopTimer(r);this.doneTm(r);}},250);},
+stopTimer(r){r.timerRunning=false;if(r.tmInt){clearInterval(r.tmInt);r.tmInt=null;}const b=this.R(r,'tBtn');if(b&&b.style.display!=='none')b.textContent='▶ Старт';},
+doneTm(r){beep();try{navigator.vibrate([200,100,200]);}catch(e){}this.R(r,'timer').textContent='✅';this.R(r,'tBtn').style.display='none';toast('⏰ Время вышло!');notify('⏰ Время вышло!',r.title);},
+};
+CUSTOM.forEach(r=>RECIPES.push(r));
+try{const t=localStorage.getItem('appTheme');if(t)setTheme(t);}catch(e){}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+Eng.buildMenu('');Eng.checkRem();Eng.checkPantry();
+let deferredPrompt;const installBanner=document.getElementById('installBanner');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;installBanner.style.display='block';});
+document.getElementById('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBanner.style.display='none';});
+document.getElementById('dismissBtn').addEventListener('click',()=>{installBanner.style.display='none';});
+</script>
+</body>
+</html>
